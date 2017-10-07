@@ -9,44 +9,38 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import AVFoundation
+
+var gameWidth: CGFloat!
+var gameHeight: CGFloat!
 
 class GameViewController: UIViewController {
+    
+    var musicPlayer : AVAudioPlayer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let view = self.view as! SKView? {
-            // Load the SKScene from 'GameScene.sks'
-            if let scene = SKScene(fileNamed: "GameScene") {
-                // Set the scale mode to scale to fit the window
-                scene.scaleMode = .aspectFill
-                
-                // Present the scene
-                view.presentScene(scene)
-            }
-            
-            view.ignoresSiblingOrder = true
-            
-            view.showsFPS = true
-            view.showsNodeCount = true
+        let stage = view as! SKView
+        stage.ignoresSiblingOrder = true
+        
+        gameWidth = 320.0
+        gameHeight = gameWidth * stage.bounds.height/stage.bounds.width
+        
+        let scene = GameScene(size: CGSize(width: gameWidth, height: gameHeight))
+        scene.scaleMode = .aspectFill
+        stage.presentScene(scene)
+        
+        playMusic()
+    }
+    
+    func playMusic() {
+        if let musicURL = Bundle.main.url(forResource: "musica", withExtension: "mp3") {
+            musicPlayer = try! AVAudioPlayer(contentsOf: musicURL)
+            musicPlayer.numberOfLoops = -1
+            musicPlayer.volume = 0.4
+            musicPlayer.play()
         }
-    }
-
-    override var shouldAutorotate: Bool {
-        return true
-    }
-
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
-        }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
     }
 
     override var prefersStatusBarHidden: Bool {
